@@ -361,16 +361,117 @@ macosxSDKSpecificationsPath=$macosSdkPlatformPath/Developer/Library/Xcode/Specif
 packageTypesForMacOSXPath="$macosxSDKSpecificationsPath/MacOSX Package Types.xcspec"
 productTypesForMacOSXPath="$macosxSDKSpecificationsPath/MacOSX Product Types.xcspec"
 
-requireFile "$packageTypesForMacOSXPath" false
-requireFile "$productTypesForMacOSXPath" false
+#requireFile "$packageTypesForMacOSXPath" false
+#requireFile "$productTypesForMacOSXPath" false
+
+# Copy from XCode 11
+machoDict=$(cat << EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>DefaultBuildSettings</key>
+	<dict>
+		<key>EXECUTABLE_NAME</key>
+		<string>\$(EXECUTABLE_PREFIX)\$(PRODUCT_NAME)\$(EXECUTABLE_VARIANT_SUFFIX)\$(EXECUTABLE_SUFFIX)</string>
+		<key>EXECUTABLE_PATH</key>
+		<string>\$(EXECUTABLE_NAME)</string>
+		<key>EXECUTABLE_PREFIX</key>
+		<string></string>
+		<key>EXECUTABLE_SUFFIX</key>
+		<string></string>
+	</dict>
+	<key>Description</key>
+	<string>Mach-O executable</string>
+	<key>Identifier</key>
+	<string>com.apple.package-type.mach-o-executable</string>
+	<key>Name</key>
+	<string>Mach-O Executable</string>
+	<key>ProductReference</key>
+	<dict>
+		<key>FileType</key>
+		<string>compiled.mach-o.executable</string>
+		<key>IsLaunchable</key>
+		<string>YES</string>
+		<key>Name</key>
+		<string>\$(EXECUTABLE_NAME)</string>
+	</dict>
+	<key>Type</key>
+	<string>PackageType</string>
+</dict>
+</plist>
+EOF
+)
+toolDict=$(cat << EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Class</key>
+	<string>PBXToolProductType</string>
+	<key>DefaultBuildProperties</key>
+	<dict>
+		<key>CODE_SIGNING_ALLOWED</key>
+		<string>YES</string>
+		<key>EXECUTABLE_PREFIX</key>
+		<string></string>
+		<key>EXECUTABLE_SUFFIX</key>
+		<string></string>
+		<key>FRAMEWORK_FLAG_PREFIX</key>
+		<string>-framework</string>
+		<key>FULL_PRODUCT_NAME</key>
+		<string>\$(EXECUTABLE_NAME)</string>
+		<key>GCC_DYNAMIC_NO_PIC</key>
+		<string>NO</string>
+		<key>GCC_INLINES_ARE_PRIVATE_EXTERN</key>
+		<string>YES</string>
+		<key>GCC_SYMBOLS_PRIVATE_EXTERN</key>
+		<string>YES</string>
+		<key>INSTALL_PATH</key>
+		<string>/usr/local/bin</string>
+		<key>LIBRARY_FLAG_NOSPACE</key>
+		<string>YES</string>
+		<key>LIBRARY_FLAG_PREFIX</key>
+		<string>-l</string>
+		<key>MACH_O_TYPE</key>
+		<string>mh_execute</string>
+		<key>REZ_EXECUTABLE</key>
+		<string>YES</string>
+		<key>STRIP_STYLE</key>
+		<string>all</string>
+	</dict>
+	<key>DefaultTargetName</key>
+	<string>Command-line Tool</string>
+	<key>Description</key>
+	<string>Standalone command-line tool</string>
+	<key>IconNamePrefix</key>
+	<string>TargetExecutable</string>
+	<key>Identifier</key>
+	<string>com.apple.product-type.tool</string>
+	<key>Name</key>
+	<string>Command-line Tool</string>
+	<key>PackageTypes</key>
+	<array>
+		<string>com.apple.package-type.mach-o-executable</string>
+	</array>
+	<key>Type</key>
+	<string>ProductType</string>
+	<key>WantsBundleIdentifierEditing</key>
+	<string>YES</string>
+	<key>WantsSigningEditing</key>
+	<string>YES</string>
+</dict>
+</plist>
+EOF
+)
 
 if [[ $hasPackageTypeForCommandLineTool != "true" ]]; then
-	machoDict=`readXcodeSpecificationById "$packageTypesForMacOSXPath" "com.apple.package-type.mach-o-executable"`
+	#machoDict=`readXcodeSpecificationById "$packageTypesForMacOSXPath" "com.apple.package-type.mach-o-executable"`
 	writeDictToSpecification "$specificationFile" "$machoDict"
 fi
 
 if [[ $hasProductTypeForCommandLineTool != "true" ]]; then
-	toolDict=`readXcodeSpecificationById "$productTypesForMacOSXPath" "com.apple.product-type.tool"`
+	#toolDict=`readXcodeSpecificationById "$productTypesForMacOSXPath" "com.apple.product-type.tool"`
 	writeDictToSpecification "$specificationFile" "$toolDict"
 fi
 
